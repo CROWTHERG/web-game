@@ -13,6 +13,12 @@
 
   <main class="auth-container">
     <h1>Login</h1>
+    
+    <!-- Error Message Container -->
+    <div id="error-message" style="display: none; color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
+      Invalid username or password.
+    </div>
+
     <form id="login-form">
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
@@ -25,6 +31,27 @@
   </footer>
 
   <script src="js/auth.js"></script>
+  <script>
+    // Handling login logic with basic validation
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMessage = document.getElementById("error-message");
+
+      // Dummy user validation (for now)
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      // If user exists and the password matches
+      if (storedUser && storedUser.username === username && storedUser.password === password) {
+        // Redirect to the homepage or dashboard
+        window.location.href = "index.html";
+      } else {
+        // Show error message
+        errorMessage.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
-<!-- This is a simple login page for the MiniFun game platform. It includes a form for users to enter their username and password. The form submission is handled by the auth.js script, which will manage the authentication process. The footer provides a link to the signup page for new users. -->

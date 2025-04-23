@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profile | Mini Games</title>
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="js/auth.js"></script>
 </head>
 <body>
   <header class="main-header">
@@ -18,14 +24,52 @@
 
   <main class="profile-container">
     <div class="profile-info">
-      <img src="assets/avatars/avatar1.png" alt="Avatar" class="avatar">
-      <h2>Username: <span id="username-display">JohnDoe</span></h2>
-      <p>Score: 1000</p>
+      <img id="profile-avatar" src="assets/avatars/default.png" alt="Avatar" class="avatar">
+      <h2>Username: <span id="profile-username">Loading...</span></h2>
+      <h3>Game History:</h3>
+      <ul id="score-history">
+        <li>No game history available.</li>
+      </ul>
     </div>
-    <!-- You can add more profile management features here -->
   </main>
 
-  <script src="js/profile.js"></script>
+  <!-- Other site-wide JS -->
   <script src="js/main.js"></script>
+
+  <!-- Page-specific logic -->
+  <script>
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Fetch user profile info from Firestore
+        db.collection("users").doc(user.uid).get().then(doc => {
+          const data = doc.data();
+          document.getElementById("profile-username").innerText = data.username;
+          // Fallback if avatar is not set
+          document.getElementById("profile-avatar").src = `assets/avatars/${data.avatar || 'default.png'}`;
+        });
+
+        // Fetch user's score history from Firestore
+        db.collection("scores")
+          .where("userId", "==", user.uid)
+          .orderBy("timestamp", "desc")
+          .get()
+          .then(snapshot => {
+            const history = document.getElementById("score-history");
+            history.innerHTML = ""; // Clear the default message
+
+            if (snapshot.empty) {
+              history.innerHTML = "<li>No game history available.</li>";
+            } else {
+              snapshot.forEach(doc => {
+                const score = doc.data();
+                history.innerHTML += `<li>${score.game}: ${score.score}</li>`;
+              });
+            }
+          });
+      } else {
+        window.location.href = "login.html"; // Redirect to login if not authenticated
+      }
+    });
+  </script>
 </body>
 </html>

@@ -13,6 +13,12 @@
 
   <main class="auth-container">
     <h1>Sign Up</h1>
+    
+    <!-- Error Message Container -->
+    <div id="error-message" style="display: none; color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
+      Please fix the errors above.
+    </div>
+
     <form id="signup-form">
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
@@ -25,5 +31,37 @@
   </footer>
 
   <script src="js/auth.js"></script>
+  <script>
+    // Simple validation logic before form submission
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMessage = document.getElementById("error-message");
+
+      // Check if username is taken (you can implement this check against localStorage or an API)
+      const takenUsernames = ["admin", "guest"]; // Example taken usernames
+      if (takenUsernames.includes(username.toLowerCase())) {
+        errorMessage.innerText = "Username is already taken!";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      // Simple password validation
+      if (password.length < 6) {
+        errorMessage.innerText = "Password must be at least 6 characters long!";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      // If everything is valid, simulate saving the user
+      const newUser = { username, password };
+      localStorage.setItem("user", JSON.stringify(newUser));
+      
+      // Redirect to the home page or login page
+      window.location.href = "index.html";
+    });
+  </script>
 </body>
 </html>

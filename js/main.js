@@ -1,24 +1,30 @@
-// Helper to get data from localStorage
-function getUser() {
-  return JSON.parse(localStorage.getItem("user")) || null;
-}
+import { auth, db } from "./auth.js";
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-// Update navbar based on login state
-function updateNavbar() {
+// Update navbar based on Firebase auth state
+function updateNavbar(userData = null) {
   const nav = document.querySelector(".nav-links");
-  const user = getUser();
 
   if (!nav) return;
 
-  if (user) {
+  if (userData) {
     nav.innerHTML = `
       <div class="user-profile">
-        <img src="assets/avatars/avatar1.png" alt="Avatar" class="avatar">
-        <span>${user.username}</span>
+        <img src="assets/avatars/${userData.avatar}" alt="Avatar" class="avatar">
+        <span>${userData.username}</span>
         <a href="leaderboard.html">Leaderboard</a>
-        <a href="#" onclick="logout()">Logout</a>
+        <a href="#" id="logout-btn">Logout</a>
       </div>
     `;
+
+    document.getElementById("logout-btn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
   } else {
     nav.innerHTML = `
       <a href="login.html">Login</a>
@@ -27,30 +33,18 @@ function updateNavbar() {
   }
 }
 
-// Logout function
-function logout() {
-  localStorage.removeItem("user");
-  alert("Logged out!");
-  window.location.href = "index.html";
-}
-
-// Call update on page load
-document.addEventListener("DOMContentLoaded", updateNavbar);
-
-// Sign-up form logic (integrated into main.js)
-document.getElementById("signup-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const takenUsernames = ["admin", "guest"];
-
-  if (takenUsernames.includes(username.toLowerCase())) {
-    document.getElementById("username-error").style.display = "block";
+// Firebase Auth listener
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    try {
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        updateNavbar(docSnap.data());
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
   } else {
-    // Save user data to localStorage (simulate sign-up)
-    const newUser = { username, password };
-    localStorage.setItem("user", JSON.stringify(newUser));
-    window.location.href = "index.html";
+    updateNavbar(null);
   }
 });

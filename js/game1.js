@@ -1,23 +1,25 @@
-// game1.js - Color Chase
+import { auth, db } from "./auth.js";
+import { collection, addDoc, Timestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-// Variables
+// Game variables
 let score = 0;
-let gameTime = 30; // Game time in seconds
+let gameTime = 30;
 let timer;
 
 // Start the game
 function startGame() {
-  const startButton = document.getElementById("start-btn");
-  startButton.style.display = "none"; // Hide start button
-  const gameArea = document.getElementById("game-area");
-  gameArea.style.display = "block"; // Show the game area
+  score = 0;
+  gameTime = 30;
 
-  // Start the countdown timer
+  document.getElementById("start-btn").style.display = "none";
+  document.getElementById("game-area").style.display = "block";
+
   startTimer();
   startColorCycle();
 }
 
-// Timer function
+// Timer countdown
 function startTimer() {
   const timerDisplay = document.getElementById("timer");
   timerDisplay.innerText = gameTime;
@@ -33,42 +35,64 @@ function startTimer() {
   }, 1000);
 }
 
-// Color cycle function
+// Color switch logic
+let currentColor = "red";
 function startColorCycle() {
   const gameArea = document.getElementById("game-area");
-  let currentColor = "red";
 
   setInterval(() => {
-    if (currentColor === "green") {
-      gameArea.style.backgroundColor = "green";
-    } else {
-      gameArea.style.backgroundColor = "red";
-    }
-
+    gameArea.style.backgroundColor = currentColor;
     currentColor = currentColor === "green" ? "red" : "green";
   }, 1000);
 }
 
-// Click event handler for the color area
+// Click handler
 function clickColorArea() {
   const gameArea = document.getElementById("game-area");
-
   if (gameArea.style.backgroundColor === "green") {
     score++;
   }
 }
 
-// End the game and show the score
+// End game
 function endGame() {
   alert(`Game Over! Your score is ${score}`);
-  // Optionally, save score to localStorage or show leaderboard
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user) {
-    const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    leaderboard.push({ username: user.username, score });
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  saveScore(score, "Color Chase");
+}
+
+// Save score to Firestore
+async function saveScore(score, gameName) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const data = userDoc.data();
+
+    await addDoc(collection(db, "scores"), {
+      userId: user.uid,
+      username: data.username,
+      game: gameName,
+      score: score,
+      timestamp: Timestamp.now()
+    });
+  } catch (error) {
+    console.error("Error saving score:", error);
   }
 }
 
-document.getElementById("game-area").addEventListener("click", clickColorArea);
+// Auth state check
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const data = userDoc.data();
+    document.getElementById("username").innerText = data.username;
+    document.getElementById("avatar").src = `assets/avatars/${data.avatar}`;
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+// Event listeners
 document.getElementById("start-btn").addEventListener("click", startGame);
+document.getElementById("game-area").addEventListener("click", clickColorArea);

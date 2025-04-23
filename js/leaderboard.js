@@ -1,25 +1,40 @@
-// Dummy data – in real use, fetch from backend or local storage
-const players = [
-    { username: "SkyBlazer", score: 5200, avatar: "assets/avatars/avatar1.png" },
-    { username: "PixelRunner", score: 4800, avatar: "assets/avatars/avatar2.png" },
-    { username: "ZapMaster", score: 4300, avatar: "assets/avatars/avatar3.png" },
-  ];
-  
-  const tbody = document.getElementById("leaderboard-body");
-  
-  players.sort((a, b) => b.score - a.score);
-  
-  players.forEach((player, index) => {
-    const row = document.createElement("tr");
-  
-    row.innerHTML = `
-      <td>${index + 1}</td>
-      <td><img src="${player.avatar}" alt="avatar" class="avatar-small"></td>
-      <td>${player.username}</td>
-      <td>${player.score}</td>
-    `;
-  
-    tbody.appendChild(row);
-  });
+import { db } from "./auth.js"; // Make sure you import db from auth.js to access Firestore
 
+// Function to load the leaderboard
+function loadLeaderboard(gameName) {
+  const leaderboardContainer = document.getElementById("leaderboard-body");
   
+  // Clear previous leaderboard
+  leaderboardContainer.innerHTML = "";
+
+  // Fetch top 10 players from Firestore for the given game
+  db.collection("scores")
+    .where("game", "==", gameName)
+    .orderBy("score", "desc")
+    .limit(10)
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((doc, index) => {
+        const data = doc.data();
+        
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td><img src="assets/avatars/${data.avatar || 'default.png'}" alt="avatar" class="avatar-small"></td>
+          <td>${data.username}</td>
+          <td>${data.score}</td>
+        `;
+        
+        leaderboardContainer.appendChild(row);
+      });
+    })
+    .catch((error) => {
+      console.error("Error loading leaderboard: ", error);
+    });
+}
+
+// Call the function for a specific game
+document.addEventListener("DOMContentLoaded", () => {
+  loadLeaderboard("Color Chase");  // Replace with dynamic game name if needed
+});
