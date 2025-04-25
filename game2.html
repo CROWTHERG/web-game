@@ -2,29 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quick Flip | MiniFun</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniFun | Flip Cards</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo">MiniFun</div>
-    <nav class="nav-links">
-      <a href="index.html">🏠 Home</a>
-      <a href="leaderboard.html">🏆 Leaderboard</a>
-      <a href="profile.html">👤 Profile</a>
-    </nav>
+  <header>
+    <h1>Flip Cards</h1>
   </header>
 
-  <main class="container game-container">
-    <h1>🧠 Quick Flip</h1>
-    <div id="card-grid" class="card-grid"></div>
-    <p id="flip-status">Flip the cards!</p>
+  <main>
+    <div id="timer">Time left: 30</div>
+    <div id="score">Score: 0</div>
+    <div id="game-container"></div>
+    <button id="start-game">Start Game</button>
+    <button onclick="window.location.href='index.html'">Back to Home</button>
   </main>
-
-  <footer>
-    🚀 Built with fun by <a href="https://twitter.com/yourhandle" target="_blank">Crowther</a>
-  </footer>
 
   <script src="js/game2.js" type="module"></script>
 </body>

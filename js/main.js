@@ -1,64 +1,21 @@
-import { auth, db } from "./auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { auth, signOut } from "./auth.js";
 
-// Function to show loading spinner
-function showLoadingSpinner() {
-  const spinner = document.getElementById("loading-spinner");
-  if (spinner) spinner.style.display = "block";  // Show spinner
-}
-
-// Function to hide loading spinner
-function hideLoadingSpinner() {
-  const spinner = document.getElementById("loading-spinner");
-  if (spinner) spinner.style.display = "none";  // Hide spinner
-}
-
-// Update navbar based on auth state
-async function updateNavbar(userData = null) {
-  const nav = document.querySelector(".nav-links");
-  if (!nav) return;
-
-  if (userData) {
-    nav.innerHTML = `
-      <div class="user-profile">
-        <img src="assets/avatars/${userData.avatar}" alt="Avatar" class="avatar">
-        <span>${userData.username}</span>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="#" id="logout-btn">Logout</a>
-      </div>
+// Check if user is logged in and display user info or login/signup buttons
+auth.onAuthStateChanged((user) => {
+  const userInfo = document.getElementById("user-info");
+  if (user) {
+    userInfo.innerHTML = `
+      <img src="assets/avatars/${user.avatar || 'default-avatar.png'}" alt="avatar" />
+      <p>Welcome, ${user.displayName}</p>
+      <button id="logout-btn">Logout</button>
     `;
-    document.getElementById("logout-btn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "index.html";
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      signOut(auth);
     });
   } else {
-    nav.innerHTML = `
-      <a href="login.html">Login</a>
-      <a href="signup.html">Sign Up</a>
+    userInfo.innerHTML = `
+      <button onclick="window.location.href='login.html'">Login</button>
+      <button onclick="window.location.href='signup.html'">Sign Up</button>
     `;
-  }
-}
-
-// Auth state listener
-onAuthStateChanged(auth, async (user) => {
-  showLoadingSpinner();  // Show loading spinner while checking auth state
-  try {
-    if (user) {
-      const docSnap = await getDoc(doc(db, "users", user.uid));
-      if (docSnap.exists()) {
-        updateNavbar(docSnap.data());
-      } else {
-        console.error("User document not found in Firestore.");
-        updateNavbar(null);  // Update navbar to show login/signup options
-      }
-    } else {
-      updateNavbar(null);  // Update navbar to show login/signup options
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    updateNavbar(null);  // Update navbar to show login/signup options
-  } finally {
-    hideLoadingSpinner();  // Hide loading spinner after auth state is checked
   }
 });

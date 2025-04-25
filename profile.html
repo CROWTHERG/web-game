@@ -2,25 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Profile | MiniFun</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | MiniFun</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo">MiniFun</div>
-    <nav class="nav-links"></nav>
+  <header>
+    <h1>Your Profile</h1>
   </header>
-
-  <main class="profile-container">
-    <h1>Welcome, <span id="profile-username"></span>!</h1>
-    <img id="profile-avatar" src="" alt="Avatar" class="avatar"/>
-    <p>Your scores and activity will appear here soon!</p>
+  
+  <main>
+    <div id="user-profile"></div>
+    <button onclick="location.href='leaderboard.html'">Leaderboard</button>
   </main>
-
-  <footer>
-    <p><a href="index.html">Back to Home</a></p>
-  </footer>
 
   <script src="js/profile.js" type="module"></script>
 </body>
