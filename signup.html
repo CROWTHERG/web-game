@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up | MiniFun</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header class="site-header">
@@ -13,15 +13,10 @@
 
   <main class="auth-container">
     <h1>Sign Up</h1>
-    
-    <!-- Error Message Container -->
-    <div id="error-message" style="display: none; color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
-      Please fix the errors above.
-    </div>
-
     <form id="signup-form">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Sign Up</button>
     </form>
   </main>
@@ -30,37 +25,15 @@
     <p>Already have an account? <a href="login.html">Login</a></p>
   </footer>
 
-  <script src="js/auth.js"></script>
-  <script>
-    // Simple validation logic before form submission
-    document.getElementById("signup-form").addEventListener("submit", function(e) {
+  <script type="module">
+    import { signUp } from './js/auth.js';
+
+    document.getElementById('signup-form').addEventListener('submit', function (e) {
       e.preventDefault();
-
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const errorMessage = document.getElementById("error-message");
-
-      // Check if username is taken (you can implement this check against localStorage or an API)
-      const takenUsernames = ["admin", "guest"]; // Example taken usernames
-      if (takenUsernames.includes(username.toLowerCase())) {
-        errorMessage.innerText = "Username is already taken!";
-        errorMessage.style.display = "block";
-        return;
-      }
-
-      // Simple password validation
-      if (password.length < 6) {
-        errorMessage.innerText = "Password must be at least 6 characters long!";
-        errorMessage.style.display = "block";
-        return;
-      }
-
-      // If everything is valid, simulate saving the user
-      const newUser = { username, password };
-      localStorage.setItem("user", JSON.stringify(newUser));
-      
-      // Redirect to the home page or login page
-      window.location.href = "index.html";
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      signUp(email, password, username);
     });
   </script>
 </body>

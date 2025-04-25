@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MiniFun | Play Games</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="site-header">
     <div class="logo">MiniFun</div>
-    <nav class="nav-links" id="nav-links">
-      <!-- Links will be dynamically updated here -->
+    <nav class="nav-links">
+      <a href="login.html" id="loginBtn">Login</a>
+      <a href="signup.html" id="signupBtn">Sign Up</a>
     </nav>
   </header>
 
@@ -21,12 +22,12 @@
       <div class="game-card">
         <h2>🎨 Color Chase</h2>
         <p>A fast reaction game with colors. Tap when it turns green!</p>
-        <a href="/html/color-chase.html" class="play-btn">Play Now</a>
+        <a href="game1.html" class="play-btn">Play Now</a>
       </div>
       <div class="game-card">
         <h2>🧠 Quick Flip</h2>
         <p>Match cards quickly before time runs out. Can you beat the top score?</p>
-        <a href="/html/quick-flip.html" class="play-btn">Play Now</a>
+        <a href="game2.html" class="play-btn">Play Now</a>
       </div>
     </div>
 
@@ -39,56 +40,11 @@
     <p>Contact | <a href="https://github.com/CROWTHERG" target="_blank">GitHub</a> | © 2025 MiniFun. All rights reserved.</p>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js" type="module"></script>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js"></script>
-
-  <!-- Initialize Firebase -->
-  <script>
-    const firebaseConfig = { /* your config */ };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // Helper to get user from localStorage
-    function getUser() {
-      return JSON.parse(localStorage.getItem("user")) || null;
-    }
-
-    // Update navbar based on login state
-    function updateNavbar() {
-      const nav = document.getElementById("nav-links");
-      const user = getUser();
-
-      if (user) {
-        nav.innerHTML = `
-          <div class="user-profile">
-            <img src="assets/avatars/avatar1.png" alt="Avatar" class="avatar">
-            <span>${user.username}</span>
-            <a href="leaderboard.html">Leaderboard</a>
-            <a href="#" onclick="logout()">Logout</a>
-          </div>
-        `;
-      } else {
-        nav.innerHTML = `
-          <a href="login.html">Login</a>
-          <a href="signup.html">Sign Up</a>
-        `;
-      }
-    }
-
-    // Logout function
-    function logout() {
-      localStorage.removeItem("user");
-      alert("Logged out!");
-      window.location.href = "index.html";
-    }
-
-    // Call update on page load
-    document.addEventListener("DOMContentLoaded", updateNavbar);
-  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 </body>
 </html>

@@ -3,39 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Leaderboard | Mini Games</title>
+  <title>Leaderboard | MiniFun</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="main-header">
-    <h1>🏆 Leaderboard</h1>
-    <nav class="nav-top">
+  <header class="site-header">
+    <div class="logo">MiniFun</div>
+    <nav class="nav-links">
       <a href="index.html">Home</a>
       <a href="profile.html">Profile</a>
-      <a href="logout.html">Logout</a>
+      <a href="#" id="logout-btn">Logout</a>
     </nav>
   </header>
 
-  <main class="leaderboard-container">
-    <table class="leaderboard-table">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Avatar</th>
-          <th>Username</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body">
-        <!-- Leaderboard entries will be loaded here -->
-        <tr>
-          <td colspan="4" style="text-align: center;">Loading leaderboard...</td>
-        </tr>
-      </tbody>
-    </table>
+  <main class="leaderboard-main">
+    <h1>Leaderboard</h1>
+    <ul id="leaderboard-list"></ul>
   </main>
 
-  <script src="js/leaderboard.js"></script>
-  <script src="js/main.js"></script>
+  <script type="module">
+    import { auth, db, logOut } from './js/auth.js';
+    import { collection, getDocs, orderBy, query } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+
+    document.getElementById('logout-btn').addEventListener('click', logOut);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) window.location.href = 'login.html';
+    });
+
+    const list = document.getElementById('leaderboard-list');
+    const q = query(collection(db, "scores"), orderBy("score", "desc"));
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach(doc => {
+      const { username, avatar, score } = doc.data();
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <img src="assets/avatars/${avatar}" class="avatar" alt="Avatar" />
+        <span>${username}</span> — <strong>${score}</strong>
+      `;
+      list.appendChild(li);
+    });
+  </script>
+  <!-- At the bottom of color-chase.html -->
+<script src="js/leaderboard.js"></script>
+</body>
+</html>
+
 </body>
 </html>
