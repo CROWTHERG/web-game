@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Color Chase | MiniFun</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="logo">MiniFun</div>
-    <nav class="nav-links"></nav>
+    <nav class="nav-links">
+      <a href="index.html">🏠 Home</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+      <a href="profile.html">👤 Profile</a>
+    </nav>
   </header>
 
-  <main class="game-container">
+  <main class="container game-container">
     <h1>🎨 Color Chase</h1>
     <div id="color-box">Wait for green...</div>
-    <p id="reaction-time"></p>
+    <p id="status">Get ready...</p>
   </main>
+
+  <footer>
+    🚀 Built with fun by <a href="https://twitter.com/yourhandle" target="_blank">Crowther</a>
+  </footer>
 
   <script src="js/game1.js" type="module"></script>
 </body>

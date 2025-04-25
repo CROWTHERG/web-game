@@ -35,41 +35,48 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Sign up function
-function signUp(email, password, username) {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      return setDoc(doc(db, "users", user.uid), {
-        username: username,
-        avatar: getRandomAvatar()
-      });
-    })
-    .then(() => {
-      window.location.href = "profile.html";
-    })
-    .catch((error) => {
-      alert(error.message);
+async function signUp(email, password, username) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Create a new user document in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      username: username,
+      avatar: getRandomAvatar(),
+      email: email
     });
+
+    // Redirect to profile page after successful signup
+    window.location.href = "profile.html";
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Error: " + error.message);
+  }
 }
 
 // Login function
-function logIn(email, password) {
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      window.location.href = "index.html";
-    })
-    .catch((error) => {
-      alert("Invalid credentials or user not found.");
-    });
+async function logIn(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    // Redirect to homepage after successful login
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Invalid credentials or user not found.");
+  }
 }
 
 // Logout function
-function logOut() {
-  signOut(auth)
-    .then(() => {
-      window.location.href = "login.html";
-    })
-    .catch(console.error);
+async function logOut() {
+  try {
+    await signOut(auth);
+    // Redirect to login page after logout
+    window.location.href = "login.html";
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("Error logging out. Please try again.");
+  }
 }
 
 // Helper: pick a random avatar
@@ -78,4 +85,5 @@ function getRandomAvatar() {
   return avatars[Math.floor(Math.random() * avatars.length)];
 }
 
+// Export functions and constants
 export { signUp, logIn, logOut, auth, db };

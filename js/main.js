@@ -2,8 +2,20 @@ import { auth, db } from "./auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
+// Function to show loading spinner
+function showLoadingSpinner() {
+  const spinner = document.getElementById("loading-spinner");
+  if (spinner) spinner.style.display = "block";  // Show spinner
+}
+
+// Function to hide loading spinner
+function hideLoadingSpinner() {
+  const spinner = document.getElementById("loading-spinner");
+  if (spinner) spinner.style.display = "none";  // Hide spinner
+}
+
 // Update navbar based on auth state
-function updateNavbar(userData = null) {
+async function updateNavbar(userData = null) {
   const nav = document.querySelector(".nav-links");
   if (!nav) return;
 
@@ -30,12 +42,23 @@ function updateNavbar(userData = null) {
 
 // Auth state listener
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const docSnap = await getDoc(doc(db, "users", user.uid));
-    if (docSnap.exists()) {
-      updateNavbar(docSnap.data());
+  showLoadingSpinner();  // Show loading spinner while checking auth state
+  try {
+    if (user) {
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        updateNavbar(docSnap.data());
+      } else {
+        console.error("User document not found in Firestore.");
+        updateNavbar(null);  // Update navbar to show login/signup options
+      }
+    } else {
+      updateNavbar(null);  // Update navbar to show login/signup options
     }
-  } else {
-    updateNavbar(null);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    updateNavbar(null);  // Update navbar to show login/signup options
+  } finally {
+    hideLoadingSpinner();  // Hide loading spinner after auth state is checked
   }
 });

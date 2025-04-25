@@ -7,17 +7,23 @@ const profileContainer = document.getElementById("profile-container");
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+    try {
+      const userSnap = await getDoc(userRef);
 
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      profileContainer.innerHTML = `
-        <h2>Welcome, ${data.username}!</h2>
-        <img src="assets/avatars/${data.avatar}" alt="Avatar" class="avatar-large">
-        <p>Email: ${user.email}</p>
-      `;
-    } else {
-      profileContainer.innerHTML = "<p>User data not found.</p>";
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        const avatar = data.avatar ? data.avatar : "default-avatar.png"; // Fallback avatar
+        profileContainer.innerHTML = `
+          <h2>Welcome, ${data.username}!</h2>
+          <img src="assets/avatars/${avatar}" alt="Avatar" class="avatar-large">
+          <p>Email: ${user.email}</p>
+        `;
+      } else {
+        profileContainer.innerHTML = "<p>User data not found.</p>";
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      profileContainer.innerHTML = "<p>There was an error loading your profile. Please try again later.</p>";
     }
   } else {
     profileContainer.innerHTML = "<p>You must be logged in to view your profile.</p>";
