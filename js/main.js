@@ -1,14 +1,10 @@
 import { auth, db } from "./auth.js";
-import {
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-// Update navbar based on Firebase auth state
+// Update navbar based on auth state
 function updateNavbar(userData = null) {
   const nav = document.querySelector(".nav-links");
-
   if (!nav) return;
 
   if (userData) {
@@ -20,7 +16,6 @@ function updateNavbar(userData = null) {
         <a href="#" id="logout-btn">Logout</a>
       </div>
     `;
-
     document.getElementById("logout-btn").addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "index.html";
@@ -33,16 +28,12 @@ function updateNavbar(userData = null) {
   }
 }
 
-// Firebase Auth listener
+// Auth state listener
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    try {
-      const docSnap = await getDoc(doc(db, "users", user.uid));
-      if (docSnap.exists()) {
-        updateNavbar(docSnap.data());
-      }
-    } catch (err) {
-      console.error("Error fetching user data:", err);
+    const docSnap = await getDoc(doc(db, "users", user.uid));
+    if (docSnap.exists()) {
+      updateNavbar(docSnap.data());
     }
   } else {
     updateNavbar(null);

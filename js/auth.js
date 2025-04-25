@@ -1,6 +1,5 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -13,12 +12,10 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
   collection,
-  addDoc,
   query,
-  where,
-  orderBy,
-  getDocs
+  orderBy
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // Firebase configuration
@@ -34,7 +31,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
@@ -52,7 +48,6 @@ function signUp(email, password, username) {
       window.location.href = "profile.html";
     })
     .catch((error) => {
-      console.error("Sign-up error:", error.message);
       alert(error.message);
     });
 }
@@ -64,12 +59,11 @@ function logIn(email, password) {
       window.location.href = "index.html";
     })
     .catch((error) => {
-      console.error("Login error:", error.message);
       alert("Invalid credentials or user not found.");
     });
 }
 
-// Log out function
+// Logout function
 function logOut() {
   signOut(auth)
     .then(() => {
@@ -78,11 +72,10 @@ function logOut() {
     .catch(console.error);
 }
 
-// Helper to pick a random avatar
+// Helper: pick a random avatar
 function getRandomAvatar() {
-  const avatars = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"];
+  const avatars = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png", "avatar5.png"];
   return avatars[Math.floor(Math.random() * avatars.length)];
 }
 
-// Export functions if using ES modules
 export { signUp, logIn, logOut, auth, db };

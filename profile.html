@@ -9,57 +9,19 @@
 <body>
   <header class="site-header">
     <div class="logo">MiniFun</div>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="leaderboard.html">Leaderboard</a>
-      <a href="#" id="logout-btn">Logout</a>
-    </nav>
+    <nav class="nav-links"></nav>
   </header>
 
-  <main class="profile-main">
-    <h1>My Profile</h1>
-    <div class="profile-card">
-      <img id="profile-avatar" src="assets/avatars/avatar1.png" alt="Avatar" class="avatar-large" />
-      <h2 id="profile-username">Username</h2>
-    </div>
+  <main class="profile-container">
+    <h1>Welcome, <span id="profile-username"></span>!</h1>
+    <img id="profile-avatar" src="" alt="Avatar" class="avatar"/>
+    <p>Your scores and activity will appear here soon!</p>
   </main>
 
   <footer>
-    <p><a href="https://github.com/CROWTHERG" target="_blank">GitHub</a> | &copy; 2025 MiniFun</p>
+    <p><a href="index.html">Back to Home</a></p>
   </footer>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js"></script>
-
-  <!-- Firebase config and auth -->
-  <script type="module">
-    import { auth, db } from "./js/auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-
-    const usernameEl = document.getElementById("profile-username");
-    const avatarEl = document.getElementById("profile-avatar");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          usernameEl.textContent = data.username;
-          avatarEl.src = `assets/avatars/${data.avatar}`;
-        }
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    document.getElementById("logout-btn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
-  </script>
+  <script src="js/profile.js" type="module"></script>
 </body>
 </html>

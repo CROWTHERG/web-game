@@ -1,40 +1,29 @@
-import { db } from "./auth.js"; // Make sure you import db from auth.js to access Firestore
+import { db } from "./auth.js";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// Function to load the leaderboard
-function loadLeaderboard(gameName) {
-  const leaderboardContainer = document.getElementById("leaderboard-body");
-  
-  // Clear previous leaderboard
+const leaderboardContainer = document.getElementById("leaderboard-list");
+
+async function loadLeaderboard() {
+  const q = query(collection(db, "scores"), orderBy("score", "desc"));
+  const querySnapshot = await getDocs(q);
   leaderboardContainer.innerHTML = "";
 
-  // Fetch top 10 players from Firestore for the given game
-  db.collection("scores")
-    .where("game", "==", gameName)
-    .orderBy("score", "desc")
-    .limit(10)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc, index) => {
-        const data = doc.data();
-        
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-          <td>${index + 1}</td>
-          <td><img src="assets/avatars/${data.avatar || 'default.png'}" alt="avatar" class="avatar-small"></td>
-          <td>${data.username}</td>
-          <td>${data.score}</td>
-        `;
-        
-        leaderboardContainer.appendChild(row);
-      });
-    })
-    .catch((error) => {
-      console.error("Error loading leaderboard: ", error);
-    });
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const item = document.createElement("div");
+    item.classList.add("leaderboard-item");
+    item.innerHTML = `
+      <img src="assets/avatars/${data.avatar}" alt="avatar">
+      <span>${data.username}</span>
+      <strong>${data.score}</strong>
+    `;
+    leaderboardContainer.appendChild(item);
+  });
 }
 
-// Call the function for a specific game
-document.addEventListener("DOMContentLoaded", () => {
-  loadLeaderboard("Color Chase");  // Replace with dynamic game name if needed
-});
+loadLeaderboard();

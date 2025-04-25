@@ -1,0 +1,15 @@
+import { logIn } from "./auth.js";
+
+document.getElementById("login-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value.trim();
+
+  if (!email || !password) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  logIn(email, password);
+});
